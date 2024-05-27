@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to the protected page!</h1>
+    <button id="logout-button">Logout</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutButton = document.getElementById('logout-button');
+            logoutButton.addEventListener('click', function () {
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+            } else {
+                fetch('https://your-app-name.herokuapp.com/protected', {
+                    headers: {
+                        'x-access-token': token
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to authenticate token');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
